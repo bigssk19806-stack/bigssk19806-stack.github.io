@@ -1,1 +1,594 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Aungaing's Secret Quest 💗</title>
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(135deg, #FFF0F5 0%, #F3E5F5 50%, #E8EAF6 100%);
+      --card-bg: rgba(255, 255, 255, 0.85);
+      --card-border: rgba(255, 255, 255, 0.9);
+      --primary-pink: #FF80AB;
+      --deep-pink: #FF4081;
+      --text-main: #4A4A4A;
+      --text-muted: #888888;
+      --accent-purple: #B388FF;
+      --shadow-soft: 0 10px 30px rgba(255, 128, 171, 0.15);
+      --radius-lg: 24px;
+      --radius-btn: 50px;
+    }
 
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      min-height: 100vh;
+      min-height: -webkit-fill-available;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      padding: 16px;
+    }
+
+    html {
+      height: -webkit-fill-available;
+    }
+
+    .bg-decorations {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .bg-item {
+      position: absolute;
+      opacity: 0.25;
+      animation: floatAround 12s infinite ease-in-out;
+    }
+
+    @keyframes floatAround {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-20px) rotate(10deg); }
+    }
+
+    #app-container {
+      position: relative;
+      width: 100%;
+      max-width: 420px;
+      height: 100%;
+      max-height: 750px;
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-soft);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      padding: 24px 20px;
+      z-index: 1;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .progress-bar-container {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .progress-text {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 6px;
+      background: rgba(255, 128, 171, 0.15);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--primary-pink), var(--accent-purple));
+      border-radius: 10px;
+      transition: width 0.4s ease;
+    }
+
+    .content-viewport {
+      width: 100%;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 12px 0;
+      position: relative;
+    }
+
+    .screen-card {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      animation: fadeIn 0.4s ease forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8deg); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .character-avatar {
+      font-size: 52px;
+      line-height: 1;
+      margin-bottom: 8px;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.06));
+      animation: gentlePulse 3s infinite ease-in-out;
+    }
+
+    @keyframes gentlePulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.06); }
+    }
+
+    .story-card-box {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.75);
+      border: 1px solid rgba(255, 128, 171, 0.2);
+      border-radius: 18px;
+      padding: 20px 16px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+    }
+
+    .story-text {
+      font-size: 16px;
+      line-height: 1.6;
+      color: var(--text-main);
+      white-space: pre-line;
+      word-break: break-word;
+      font-weight: 500;
+    }
+
+    .input-wrapper {
+      width: 100%;
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .quest-input {
+      width: 100%;
+      padding: 14px 18px;
+      border-radius: 14px;
+      border: 1.5px solid rgba(255, 128, 171, 0.4);
+      background: rgba(255, 255, 255, 0.9);
+      font-size: 15px;
+      color: var(--text-main);
+      outline: none;
+      text-align: center;
+      transition: all 0.25s ease;
+    }
+
+    .quest-input:focus {
+      border-color: var(--deep-pink);
+      box-shadow: 0 0 0 3px rgba(255, 64, 129, 0.15);
+    }
+
+    .hint-text {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .button-area {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      padding-top: 8px;
+    }
+
+    .btn-action {
+      width: 100%;
+      max-width: 280px;
+      padding: 14px 28px;
+      border: none;
+      border-radius: var(--radius-btn);
+      background: linear-gradient(135deg, var(--primary-pink), var(--deep-pink));
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(255, 64, 129, 0.3);
+      transition: transform 0.15s ease, opacity 0.2s ease, box-shadow 0.2s ease;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-action:active {
+      transform: scale(0.96);
+    }
+
+    .btn-action:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .toast-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(4px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 10;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .toast-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .toast-box {
+      background: white;
+      padding: 24px 28px;
+      border-radius: 20px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      transform: scale(0.85);
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      max-width: 80%;
+    }
+
+    .toast-overlay.active .toast-box {
+      transform: scale(1);
+    }
+
+    .toast-icon { font-size: 40px; margin-bottom: 8px; }
+    .toast-title { font-size: 18px; font-weight: 700; color: var(--text-main); }
+
+    .final-screen {
+      gap: 12px;
+    }
+
+    .final-heart {
+      font-size: 72px;
+      animation: heartbeat 1.5s infinite;
+    }
+
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      15% { transform: scale(1.15); }
+      30% { transform: scale(1); }
+      45% { transform: scale(1.15); }
+    }
+
+    .final-signature {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--deep-pink);
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bg-decorations">
+    <div class="bg-item" style="top: 10%; left: 10%; font-size: 24px;">🌸</div>
+    <div class="bg-item" style="top: 25%; left: 80%; font-size: 28px; animation-delay: 1s;">✨</div>
+    <div class="bg-item" style="top: 65%; left: 15%; font-size: 22px; animation-delay: 2s;">🎀</div>
+    <div class="bg-item" style="top: 80%; left: 75%; font-size: 26px; animation-delay: 3s;">💗</div>
+    <div class="bg-item" style="top: 45%; left: 88%; font-size: 20px; animation-delay: 1.5s;">⭐</div>
+  </div>
+
+  <div id="app-container">
+    <div class="progress-bar-container" id="progress-container">
+      <div class="progress-text" id="progress-text">1 / 68</div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+    </div>
+
+    <div class="content-viewport" id="content-viewport"></div>
+
+    <div class="button-area" id="button-area"></div>
+  </div>
+
+  <div class="toast-overlay" id="toast-overlay">
+    <div class="toast-box">
+      <div class="toast-icon" id="toast-icon">🔓</div>
+      <div class="toast-title" id="toast-title">答对了！</div>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'aungaing_secret_quest_v1';
+
+    function normalize(s) {
+      return String(s || '')
+        .trim()
+        .toLowerCase()
+        .replace(/[\s\u3000]/g, "")
+        .replace(/[！!。.,，？?]/g, "");
+    }
+
+    const screens = [
+      { id: 1, avatar: "🐰", text: "嗨，宝宝！\n\n欢迎来到这里……\n这是一个专门为你准备的小小空间 ♡", btn: "点击开启 Quest →" },
+      { id: 2, avatar: "✨", text: "你可能会好奇，这是什么对不对？\n\n其实……这是一个只有你能解开的小秘密任务。", btn: "继续看看吧 ♡" },
+      { id: 3, avatar: "🐻", text: "最近看你工作和生活都很辛苦，\n所以我想用一种特别的方式，\n给你一点点惊喜和陪伴。", btn: "是什么惊喜呢？" },
+      { id: 4, avatar: "🎀", text: "在这个小旅程里，\n你需要和我一起回忆一些属于我们的细节。\n\n准备好了吗？", btn: "准备好了！" },
+      { id: 5, avatar: "🔑", text: "每一步都会带你走向终点，\n途中有一些小关卡，\n只有真正的你才能通过哦！", btn: "开始第一章 🌸" },
+      { id: 6, avatar: "🌸", text: "第一章：遇见与心动\n\n其实有时候想想，\n能遇到你真的是一件很神奇的事情。", btn: "继续 ♡" },
+      { id: 7, avatar: "🍃", text: "在我们刚认识的时候，\n我经常会想，\n你是一个怎样的人呢？", btn: "然后呢？" },
+      { id: 8, avatar: "🐷", text: "后来慢慢聊天、慢慢了解，\n我发现你是一个好温柔、好有责任感的人。", btn: "偷笑 ☺️" },
+      { id: 9, avatar: "☁️", text: "和你讲话的时候，\n即使只是简单几句话，\n我都觉得心里暖暖的。", btn: "我也一样 ♡" },
+      { id: 10, avatar: "🍓", text: "生活里的很多小瞬间，\n因为有了你，\n都变得比以前更有意思了。", btn: "继续往前走 →" },
+      { id: 11, avatar: "🌙", text: "有时候晚上睡不着，\n我就会翻看我们的聊天记录，\n一个人看着手机傻笑。", btn: "笨蛋 笨蛋 ♡" },
+      { id: 12, avatar: "💌", text: "你总是对我那么耐心，\n照顾我的小情绪，\n这些我都默默记在心里啦。", btn: "因为是你呀" },
+      { id: 13, avatar: "🌼", text: "所以，我想把这些珍贵的感觉，\n一张一张写进这个小网页里。", btn: "真甜 ♡" },
+      { id: 14, avatar: "🐣", text: "不过，既然是 Secret Quest，\n当然不能让你太容易就看到最后咯！", btn: "要接受挑战了吗？" },
+      { id: 15, avatar: "🔐", text: "接下来，会出现我们的第一个秘密机关。\n\n你需要回答正确的答案，才能拿到第一把钥匙。", btn: "来吧！" },
+      { id: 16, avatar: "💡", text: "提示：想想我平时最喜欢、最念念不忘的美食是什么？\n\n如果答错的话，网页会重置哦！要认真想一想~", btn: "我知道了！" },
+      { id: 17, avatar: "🎁", text: "准备好了吗？\n第一把钥匙就在下一页……", btn: "去解锁 🔓" },
+      { 
+        id: 18, 
+        avatar: "🍗", 
+        text: "【秘密关卡 1】\n\n请问：我最喜欢吃的美食是什么？", 
+        type: "question",
+        placeholder: "写下你的答案吧…… ♡",
+        answers: ["炸鸡", "鸡排", "鸡肉", "fried chicken", "炸鸡块", "炸鸡排", "ไก่ทอด"],
+        btn: "解锁第一把钥匙 🔓",
+        hint: "提示：香香脆脆的……"
+      },
+      { id: 19, avatar: "🎉", text: "第一把钥匙已解锁！🔓✨\n\n我就知道你一定会答对，太棒啦！", btn: "领取第一把钥匙 ♡" },
+      { id: 20, avatar: "🔑", text: "【获得道具：金色的钥匙 🗝️】\n\n这把钥匙代表着：我们共享的那些美味回忆。", btn: "继续前进 →" },
+      { id: 21, avatar: "🌟", text: "第二章：时光的印记\n\n你知道吗？时间其实是一个很神奇的东西。", btn: "为什么呢？" },
+      { id: 22, avatar: "🗓️", text: "有时候觉得时间过得很快，\n转眼我们就一起走了这么远。", btn: "是的呢……" },
+      { id: 23, avatar: "⏳", text: "但有时候又觉得，\n每一天、每一小时，都留下了很深的脚印。", btn: "继续听你说" },
+      { id: 24, avatar: "🧸", text: "在这个世界上，\n每天都有成千上万的事情在发生，\n但最幸运的事，就是遇到了你。", btn: "我也很幸运 ♡" },
+      { id: 25, avatar: "🌷", text: "无论距离有多远，\n只要想到你，\n我就觉得心里很踏实。", btn: "抱抱 🫂" },
+      { id: 26, avatar: "🎶", text: "听一首歌会想起你，\n看到好看的风景会想拍给你，\n吃到好吃的东西也想和你分享。", btn: "我也是这样的" },
+      { id: 27, avatar: "🍵", text: "这就是喜欢一个人的感觉吧，\n平凡的日子也变得闪闪发光。", btn: "✨✨✨" },
+      { id: 28, avatar: "🐰", text: "宝宝，你有没有算过，\n我们相识、相知，已经一起走过了多少日子？", btn: "这需要仔细算算……" },
+      { id: 29, avatar: "🧮", text: "有些数字看起来很普通，\n但加上了我们，就变成了独特的意义。", btn: "确实是这样" },
+      { id: 30, avatar: "💫", text: "接下来是第二个秘密关卡！\n这可是一道高难度的数学与时间计算题哦~", btn: "我不怕，来吧！" },
+      { id: 31, avatar: "📖", text: "基准信息：\n生日：2010年10月24日\n计算节点：2026年10月2日", btn: "记下了，然后呢？" },
+      { id: 32, avatar: "🔍", text: "你需要准确算出这段时间的跨度。\n无论是按年月日、总天数，还是周数计算，都可以哦！", btn: "让我好好想想……" },
+      { id: 33, avatar: "⚠️", text: "注意：千万不要猜错哦，\n答错的话又要重新开始啦！", btn: "准备回答！" },
+      { id: 34, avatar: "🔑", text: "第二把钥匙就在面前了……\n展现你记忆力的时候到了！", btn: "挑战关卡 2 🔓" },
+      { 
+        id: 35, 
+        avatar: "📅", 
+        text: "【秘密关卡 2】\n\n从2010年10月24日到2026年10月2日，一共经过了多久？", 
+        type: "question",
+        placeholder: "我想听听你的答案 ♡",
+        answers: ["15年11个月8天", "5822天", "831周5天"],
+        btn: "解锁第二把钥匙 🔓",
+        hint: "答15年11个月8天 或 5822天 或 831周5天 均可"
+      },
+      { id: 36, avatar: "🎊", text: "第二把钥匙已解锁！🔓✨\n\n哇！你居然真的算出来了！太厉害了吧宝宝！", btn: "嘿嘿，那是当然 😎" },
+      { id: 37, avatar: "🔑", text: "【获得道具：时光的水晶 💎】\n\n这颗水晶记录着我们相识相伴的每一天。", btn: "继续 Quest →" },
+      { id: 38, avatar: "🐻", text: "第三章：关于我的小秘密\n\n走到这里，你已经完成了一半的 Quest 啦！", btn: "真不简单呢" },
+      { id: 39, avatar: "🎀", text: "接下来，我想测试一下，\n你对我到底有多了解呢？", btn: "考考我吧！" },
+      { id: 40, avatar: "👗", text: "平时我们聊了那么多，\n关于我的各种小细节，你都有认真记住吗？", btn: "当然都有记在心里！" },
+      { id: 41, avatar: "📏", text: "比如……我的身高！\n虽然这不是什么不可说的秘密，但也是关于我的重要数据哦~", btn: "我知道！" },
+      { id: 42, avatar: "💭", text: "有时候站在你身边，\n或者想象站在你身边的样子，\n都觉得是最可爱的身高差。", btn: "可爱的女孩子 ♡" },
+      { id: 43, avatar: "🌸", text: "不准偷看答案，\n也不准乱猜哦！", btn: "才不会呢！" },
+      { id: 44, avatar: "✨", text: "答对了就能拿到第三把钥匙，\n距离终点越来越近了！", btn: "准备好了！" },
+      { id: 45, avatar: "🐷", text: "加油，宝宝！\n我相信你一定能一眼答对！", btn: "去答题 🔓" },
+      { id: 46, avatar: "🔑", text: "第三把钥匙已准备就绪……", btn: "进入第三关 →" },
+      { 
+        id: 47, 
+        avatar: "📐", 
+        text: "【秘密关卡 3】\n\n请问：我的身高是多少 cm？", 
+        type: "question",
+        placeholder: "输入我的身高数据……",
+        answers: ["155", "155cm", "155厘米", "155 cm", "155 厘米"],
+        btn: "解锁第三把钥匙 🔓",
+        hint: "提示：一个非常可爱的数字~"
+      },
+      { id: 48, avatar: "✨", text: "第三把钥匙已解锁！🔓✨\n\n答对啦！看来你真的有认真记住关于我的所有事。", btn: "那当然，你最重要 ♡" },
+      { id: 49, avatar: "🔑", text: "【获得道具：粉红缎带 🎀】\n\n这条缎带系着我们之间所有甜甜的小细节。", btn: "继续前进 →" },
+      { id: 50, avatar: "🌙", text: "第四章：最初的起点\n\n不知不觉，只剩下最后一把钥匙了。", btn: "这么快就要到终点了吗？" },
+      { id: 51, avatar: "💬", text: "我们回到了最初最初的那个瞬间。", btn: "最初的瞬间？" },
+      { id: 52, avatar: "📱", text: "你还记得，我们第一次打招呼的时候，\n说的第一句话是什么吗？", btn: "让我想想……" },
+      { id: 53, avatar: "🌱", text: "那时候的我们，\n可能都没想过，\n一句简单的话，会开启后面这么长故事吧？", btn: "是啊，真神奇" },
+      { id: 54, avatar: "💌", text: "那是所有故事的开端，\n是最简单、但也最特别的几个字。", btn: "我知道是什么！" },
+      { id: 55, avatar: "🔒", text: "只要通过这最后一关，\n所有的钥匙就全部集齐了！", btn: "最后一关，冲！" },
+      { id: 56, avatar: "👑", text: "准备好了吗？\n解开这最后的封印吧！", btn: "回答最后的秘密 🔓" },
+      { 
+        id: 57, 
+        avatar: "🤝", 
+        text: "【秘密关卡 4】\n\n我们第一次打招呼时，说的第一句话是什么？", 
+        type: "question",
+        placeholder: "输入最初的招呼……",
+        answers: ["你好", "你好！", "ni hao", "nǐ hǎo", "nihao", "nǐhǎo"],
+        btn: "解锁终极钥匙 🔓",
+        hint: "提示：最经典、最简单礼貌的问候"
+      },
+      { id: 58, avatar: "👑", text: "恭喜！所有 4 把钥匙全部解锁成功！🔓🎉\n\n任务完成！感谢你的参与！", btn: "查看任务结果 →" },
+      { id: 59, avatar: "🎬", text: "……\n……\n\n等等！", btn: "嗯？怎么了？" },
+      { id: 60, avatar: "😜", text: "你真的以为到这里就结束了吗？♡\n\n才没有呢！\n真正的惊喜，现在才要开始呢……", btn: "欸？！还有什么？" },
+      { id: 61, avatar: "🌸", text: "前面的关卡，只是想陪你玩个小游戏。\n\n接下来这些话，才是我最最想对你说的真话。", btn: "认真听你说 ♡" },
+      { id: 62, avatar: "💖", text: "谢谢你，宝宝。\n\n谢谢你来到我的生命里，\n也谢谢你成为我现在很珍惜的人。", btn: "我也很珍惜你" },
+      { id: 63, avatar: "✨", text: "虽然我们认识的时间还不算很长……\n但是你已经变成了我会期待的人。", btn: "我一直都在 ♡" },
+      { id: 64, avatar: "🌷", text: "我希望以后的很多很多天，\n我身边的人还是你。", btn: "一定会是的" },
+      { id: 65, avatar: "🧸", text: "如果我偶尔任性、想太多……\n请再給我一点点耐心。\n\n我也会努力，努力好好珍惜你，\n努力成为更好的女朋友。", btn: "我会一直耐心陪着你" },
+      { id: 66, avatar: "💌", text: "好吧……\n这次真的快要结束了。\n\n点击下面，开启最后一个小秘密。", btn: "最后一次 ♡" },
+      { id: 67, avatar: "🤫", text: "最后一个小秘密：\n\n其实从你打开第一张的时候……\n我就一直在 infinitely 等你走到这里。\n\n我真的很想你，\n也真的很开心你出现在我的生活里。", btn: "走向 True Ending 💕" },
+      { 
+        id: 68, 
+        avatar: "🐰💗", 
+        text: "我爱你，宝宝。♡\n\n谢谢你走完这条小小的路。\n愿我们的故事，一直甜甜蜜蜜地继续下去。", 
+        type: "final",
+        btn: null 
+      }
+    ];
+
+    let currentIndex = 0;
+    let isTransitioning = false;
+
+    function loadProgress() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved !== null) {
+          const parsed = parseInt(saved, 10);
+          if (!isNaN(parsed) && parsed >= 0 && parsed < screens.length) {
+            currentIndex = parsed;
+          }
+        }
+      } catch (e) {
+        console.warn("localStorage error:", e);
+      }
+    }
+
+    function saveProgress(index) {
+      try {
+        localStorage.setItem(STORAGE_KEY, index.toString());
+      } catch (e) {
+        console.warn("save error:", e);
+      }
+    }
+
+    function resetQuest() {
+      try {
+        localStorage.removeItem(STORAGE_KEY);
+      } catch (e) {
+        console.warn("clear error:", e);
+      }
+      currentIndex = 0;
+      renderScreen();
+    }
+
+    function checkAnswer(inputVal, validAnswers) {
+      const value = normalize(inputVal);
+      if (!value) return false;
+      return validAnswers.some(a => {
+        const key = normalize(a);
+        return key && value.includes(key);
+      });
+    }
+
+    function showToast(icon, title, callback) {
+      const overlay = document.getElementById('toast-overlay');
+      document.getElementById('toast-icon').textContent = icon;
+      document.getElementById('toast-title').textContent = title;
+
+      overlay.classList.add('active');
+      setTimeout(() => {
+        overlay.classList.remove('active');
+        if (callback) callback();
+      }, 1400);
+    }
+
+    function renderScreen() {
+      const current = screens[currentIndex];
+      const viewport = document.getElementById('content-viewport');
+      const buttonArea = document.getElementById('button-area');
+      const progressText = document.getElementById('progress-text');
+      const progressFill = document.getElementById('progress-fill');
+
+      const pageNum = currentIndex + 1;
+      progressText.textContent = `${pageNum} / ${screens.length}`;
+      progressFill.style.width = `${(pageNum / screens.length) * 100}%`;
+
+      viewport.innerHTML = '';
+      buttonArea.innerHTML = '';
+
+      const card = document.createElement('div');
+      card.className = `screen-card ${current.type === 'final' ? 'final-screen' : ''}`;
+
+      if (current.type === 'final') {
+        card.innerHTML = `
+          <div class="final-heart">💖</div>
+          <div class="character-avatar">${current.avatar}</div>
+          <div class="story-card-box">
+            <p class="story-text">${current.text}</p>
+            <div class="final-signature">— Aungaing 🐰💗</div>
+          </div>
+        `;
+      } else if (current.type === 'question') {
+        card.innerHTML = `
+          <div class="character-avatar">${current.avatar}</div>
+          <div class="story-card-box">
+            <p class="story-text">${current.text}</p>
+            <div class="input-wrapper">
+              <input type="text" id="answer-input" class="quest-input" placeholder="${current.placeholder}" autocomplete="off" />
+              ${current.hint ? `<div class="hint-text">${current.hint}</div>` : ''}
+            </div>
+          </div>
+        `;
+      } else {
+        card.innerHTML = `
+          <div class="character-avatar">${current.avatar}</div>
+          <div class="story-card-box">
+            <p class="story-text">${current.text}</p>
+          </div>
+        `;
+      }
+
+      viewport.appendChild(card);
+
+      if (current.btn) {
+        const btn = document.createElement('button');
+        btn.className = 'btn-action';
+        btn.innerHTML = current.btn;
+        btn.id = 'action-btn';
+
+        btn.addEventListener('click', () => handleNext(current));
+        buttonArea.appendChild(btn);
+
+        if (current.type === 'question') {
+          const input = document.getElementById('answer-input');
+          if (input) {
+            input.addEventListener('keypress', (e) => {
+              if (e.key === 'Enter') handleNext(current);
+            });
+          }
+        }
+      }
+    }
+
+    function handleNext(screenData) {
+      if (isTransitioning) return;
+
+      const btn = document.getElementById('action-btn');
+      if (btn) btn.disabled = true;
+      isTransitio
